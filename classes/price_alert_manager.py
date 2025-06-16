@@ -1,25 +1,32 @@
+from __future__ import annotations
+
+import logging
+
 import requests
-from pymongo import MongoClient
+from bson import ObjectId
+from utils.constants import MONGO_URI, DB_NAME, ANGELA_TELEGRAM_USERID
+from classes.mongo_initializer import MongoInitializer
+
 
 class PriceAlertManager:
-    def __init__(self, mongo_uri="mongodb://localhost:27017",
-                 db_name="price_alert_bot", collection_name="alerts"):
-        self.client = MongoClient(mongo_uri)
-        self.db = self.client[db_name]
-        self.collection = self.db[collection_name]
+    def __init__(self):
+        self.mongo = MongoInitializer.get_instance(MONGO_URI, DB_NAME)
+        self.collection = self.mongo.get_db()["price_alerts"]
 
-    def add_price_alert(self, chat_id: int, coin_name: str, target_price: float):
-        self.collection.update_one(
-            {"chat_id": chat_id, "coin_name": coin_name.lower()},
-            {"$set": {"target_price": target_price}},
-            upsert=True
-        )
+    def add_price_alert(self, user_id: int, coin_name: str, target_price: float):
+        self.collection.insert_one({
+            "user_id": user_id,
+            "coin_name": coin_name,
+            "target_price": target_price
+        })
+        print("✅ Alert added to DB")
 
-    def get_all_alerts(self):
+
+    def get_all_alerts(self) -> list:
         return list(self.collection.find())
 
-    def remove_alert(self, alert_id):
-        self.collection.delete_one({"_id": alert_id})
+    def remove_alert(self, alert_id: str | ObjectId):
+        self.collection.delete_one({"_id": ObjectId(alert_id)})
 
     def get_coin_price(self, coin_name: str) -> float | None:
         url = f"https://api.coingecko.com/api/v3/simple/price?ids={coin_name.lower()}&vs_currencies=usd"
@@ -32,21 +39,22 @@ class PriceAlertManager:
             print(f"Error fetching price for {coin_name}: {e}")
             return None
 
-    async def check_alerts(self):
+    async def check_alerts(self) -> list[dict]:
         triggered = []
         alerts = self.get_all_alerts()
 
         for alert in alerts:
             coin_name = alert["coin_name"]
             target_price = alert["target_price"]
-            chat_id = alert["chat_id"]
+            user_id = alert["user_id"]
             current_price = self.get_coin_price(coin_name)
+
             if current_price is None:
                 continue
 
             if current_price <= target_price:
                 triggered.append({
-                    "chat_id": chat_id,
+                    "user_id": user_id,
                     "coin_name": coin_name,
                     "current_price": current_price,
                     "target_price": target_price,
@@ -55,5 +63,22 @@ class PriceAlertManager:
 
         return triggered
 
-    def clear_alert(self, alert_id):
+    def clear_alert(self, alert_id: str | ObjectId):
         self.remove_alert(alert_id)
+
+    def get_alerts_by_user(self, user_id):
+        results = list(self.collection.find({"user_id": user_id}))
+        logging.info(f"Found {len(results)} active alerts in your Coin Angel.")
+        return results
+
+
+if __name__ == "__main__":
+    user = ANGELA_TELEGRAM_USERID
+    manager = PriceAlertManager()
+    alerts = manager.get_all_alerts()
+    print(f"Found {len(alerts)} alerts in DB")
+    user_alerts = manager.get_alerts_by_user(user)
+    for alert in user_alerts:
+        coin = alert.get("coin_name") or alert.get("coin", "UNKNOWN")
+        price = alert.get("target_price", "N/A")
+        print(f"  - {coin.upper()}: {price}$")
