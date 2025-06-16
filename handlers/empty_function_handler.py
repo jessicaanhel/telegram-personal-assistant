@@ -5,14 +5,18 @@ from telegram.warnings import PTBUserWarning
 
 from functions.empty_function_1.bot import empty_function_1
 from handlers.inline_handler import inline_button_handler
-from utils.functions import reset_and_start
 from utils.constants import EMPTY_FUNCTION_1, EMPTY_FUNCTION_2
-
 filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
+
+app = None
+
+def init_app_empty_handler(app_instance):
+    global app
+    app = app_instance
 
 async def ask_param1_empty_function(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param1'] = float(update.message.text)  # Convert the input to float
