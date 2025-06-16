@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import ConversationHandler, CallbackQueryHandler, MessageHandler, filters
 from telegram.warnings import PTBUserWarning
 
-from functions.empty_function_1.bot import empty_function_1
+from _features.functions.empty_function_1.bot import empty_function_1
 from handlers.inline_handler import inline_button_handler
 from utils.constants import EMPTY_FUNCTION_1, EMPTY_FUNCTION_2
 filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
