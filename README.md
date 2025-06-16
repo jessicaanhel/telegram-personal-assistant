@@ -1,24 +1,49 @@
-## Column Explanation
-1. timestamp: The time at which the candlestick (OHLC) data was recorded.
+# 💸 Coin Angel – Telegram Trading Bot
 
-* Example: 2024-10-15 04:00:00 means the candlestick represents price movement from 4:00 to 5:00 UTC.
-open, high, low, close: Standard OHLC values for the candlestick.
+**Coin Angel** is a personal Telegram bot that helps you track cryptocurrency prices and set up custom alerts for your favorite coins. Built with `python-telegram-bot`, `FastAPI`, and `MongoDB`, it offers a smooth and interactive experience for crypto traders and enthusiasts.
 
-2. open: Price at the start of the hour.
-* high: Highest price during the hour.
-* low: Lowest price during the hour.
-* close: Price at the end of the hour.
-* L-C (Low-Close): The absolute difference between the current candlestick's low and the previous close.
+---
 
-Used to calculate the True Range (TR).
-3. TR (True Range): The largest of the following:
+##  Features
 
-* High - Low (price range for the current hour).
-* High - Previous Close (gap up).
-* Low - Previous Close (gap down).
-* TR reflects the actual price movement, accounting for gaps between candlesticks.
-* ATR (Average True Range): A moving average of the True Range (TR) over the last 14 periods (default).
+- ✅ Create custom **price alerts** for any coin  
+- 📬 Get real-time Telegram notifications when targets are hit  
+- 📋 View all your **active alerts** anytime  
+- 💾 Uses **MongoDB** for persistent alert storage  
+- 🔌 Built with **async** handlers for performance and reliability  
 
-4. ATR measures volatility:
-* A higher ATR means the price fluctuates significantly.
-* A lower ATR means the market is less volatile.
+---
+
+## Tech Stack
+
+- Python 3.9+
+- [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) (v20+)
+- FastAPI (for backend integration)
+- MongoDB (via `pymongo`)
+- SQLite (for other lightweight data handling)
+
+---
+
+##  Getting Started
+
+### 1. Add the bot on Telegram  
+Search for [@AngelCoin_Bot](https://t.me/AngelCoin_Bot) in your Telegram app and start a chat.
+
+### 2. Start the bot  
+Type `/start` to initialize the main menu and begin choosing a bot's function.
+
+
+## Example Commands
+Inside the bot:
+
+* Press Create Price Alert → Choose a coin → Set your price
+* Press My Alerts to view all your current price alerts
+* Press Main Menu to start over
+
+## Coming Soon
+*Email notifications
+*Price charts with historical data
+*Cancel/edit alert options
+
+## 👤 Author
+Made with ❤️ by @jessicaanhel

@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import CallbackQueryHandler, ConversationHandler, MessageHandler, filters
 from telegram.warnings import PTBUserWarning
 
-from functions.calculation_script.calculation_script import my_function_extended
+from _features.functions.calculation_script.calculation_script import my_function_extended
 from handlers.inline_handler import inline_button_handler
 from utils.constants import (
     ASK_PARAM1_EXTENDED,
