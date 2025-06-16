@@ -1,40 +1,55 @@
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, filters
+import logging
+from telegram.ext import ContextTypes
+from handlers.price_alert_handler import conv_handler_setup_alerts, init_app_price_alert_handler
+from handlers.extended_function_handler import conv_handler_extended, init_app_extended_handler
+from handlers.empty_function_handler import conv_handler_empty_1, init_app_empty_handler
 from handlers.inline_handler import inline_button_handler
-from handlers.extended_function_handler import ask_param1_extended, ask_param2_extended, ask_param3_extended, \
-    ask_param4_extended, conv_handler_extended
-from handlers.empty_function_handler import ask_param1_empty_function, ask_param2_empty_function, conv_handler_empty_1
-from handlers.start_handler import start_command
-from utils.constants import (
-    ASK_PARAM1_EXTENDED,
-    ASK_PARAM2_EXTENDED,
-    ASK_PARAM3_EXTENDED,
-    ASK_PARAM4_EXTENDED,
-    TELEGRAM_BOT_TOKEN, EMPTY_FUNCTION_1, EMPTY_FUNCTION_2)
+from telegram.ext import CommandHandler, CallbackQueryHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import ConversationHandler
+
+from coin_angel_bot import CoinAngelBot
+
+class App:
+    def __init__(self):
+        self.bot = CoinAngelBot()
+
+    async def start_command(self, update, context):
+        user = update.effective_user
+
+        buttons = [
+            [InlineKeyboardButton("Create Price Alert", callback_data="setup_alert"),
+             InlineKeyboardButton("My Alerts", callback_data="get_alerts_for_user")],
+            [InlineKeyboardButton("Empty Function 2", callback_data="empty_function_2"),
+             InlineKeyboardButton("Run my extended function", callback_data="run_extended_function")]
+        ]
+        markup = InlineKeyboardMarkup(buttons)
+
+        await update.message.reply_text(
+            f"Hello, {user.first_name}! Welcome to your coin angel. Make your choice: Your user ID is: {user.id}",
+            reply_markup=markup
+        )
+        return ConversationHandler.END
+
+    async def error_handler(self, update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+        logging.error("Exception occurred", exc_info=context.error)
 
 
-if TELEGRAM_BOT_TOKEN is not None:
-    print("Token is correct:" , TELEGRAM_BOT_TOKEN[-5:])
-else:
-    print("TELEGRAM_ANGEL_TOKEN is None")
+    def register_handlers(self):
+        self.bot.add_handler(CommandHandler("start", self.start_command))
+        self.bot.add_handler(conv_handler_extended)
+        self.bot.add_handler(conv_handler_empty_1)
+        self.bot.add_handler(conv_handler_setup_alerts)
+        self.bot.add_error_handler(self.error_handler)
+        self.bot.add_handler(CallbackQueryHandler(inline_button_handler))
 
-extended_function = True
-
-
-def main():
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-
-    application.add_handler(CommandHandler("start", start_command))
-    # Add handlers for different workflows
-    application.add_handler(conv_handler_extended)
-    application.add_handler(conv_handler_empty_1)
-
-    # Add CallbackQueryHandler separately for inline button handling
-    application.add_handler(CallbackQueryHandler(inline_button_handler, pattern="^run_extended_function$"))
-    application.add_handler(CallbackQueryHandler(inline_button_handler, pattern="^empty_function_1$"))
-    application.add_handler(CallbackQueryHandler(inline_button_handler, pattern="^empty_function_2$"))
-
-
-    application.run_polling()
+    def run(self):
+        self.register_handlers()
+        self.bot.run()
 
 if __name__ == "__main__":
-    main()
+    app = App()
+    init_app_empty_handler(app)
+    init_app_extended_handler(app)
+    init_app_price_alert_handler(app)
+    app.run()
