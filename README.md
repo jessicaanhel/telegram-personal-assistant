@@ -6,11 +6,11 @@
 
 ##  Features
 
-- ✅ Create custom **price alerts** for any coin  
-- 📬 Get real-time Telegram notifications when targets are hit  
-- 📋 View all your **active alerts** anytime  
-- 💾 Uses **MongoDB** for persistent alert storage  
-- 🔌 Built with **async** handlers for performance and reliability  
+- Create custom **price alerts** for any coin  
+- Get real-time Telegram notifications when targets are hit  
+- View all your **active alerts** anytime  
+- Uses **MongoDB** for persistent alert storage  
+- Built with **async** handlers for performance and reliability  
 
 ---
 
