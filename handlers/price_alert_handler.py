@@ -23,7 +23,7 @@ async def start_price_alert_function(update: Update, context: ContextTypes.DEFAU
 
 async def choose_coin_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["coin_name"] = update.message.text.strip()
-    await update.message.reply_text("Enter the target price (e.g., 40000):")
+    await update.message.reply_text("Enter the target price in $ (e.g., 40000):")
     return CHOOSING_TARGET_PRICE
 
 async def choose_target_price(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -45,7 +45,7 @@ async def choose_target_price(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     alert_manager.add_price_alert(user_id=user_id, coin_name=coin_name, target_price=target_price)
     await update.message.reply_text(
-        f"✅ Alert set for {coin_name} at ${target_price}",
+        f"✔ Alert set for {coin_name} at ${target_price}",
         reply_markup=reply_markup
     )
 
@@ -78,7 +78,7 @@ async def show_user_alerts(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Unexpected error: no query or message.")
 
 async def cancel_alert(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("❌ Alert creation canceled.")
+    await update.message.reply_text("✘ Alert creation canceled.")
     return ConversationHandler.END
 
 conv_handler_setup_alerts = ConversationHandler(

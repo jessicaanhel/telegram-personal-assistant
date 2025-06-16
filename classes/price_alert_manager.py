@@ -19,7 +19,7 @@ class PriceAlertManager:
             "coin_name": coin_name,
             "target_price": target_price
         })
-        print("✅ Alert added to DB")
+        print("✔ Alert added to DB")
 
 
     def get_all_alerts(self) -> list:

@@ -22,9 +22,7 @@ def init_app_extended_handler(app_instance):
 
 async def ask_param1_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        from coin_angel_bot import CoinAngelBot
-        bot = CoinAngelBot()
-        return await bot.reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param1'] = float(update.message.text)  # Convert the input to float
@@ -38,7 +36,7 @@ async def ask_param1_extended(update: Update, context):
 
 async def ask_param2_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param2'] = float(update.message.text)  # Convert the input to float
@@ -52,7 +50,7 @@ async def ask_param2_extended(update: Update, context):
 
 async def ask_param3_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param3'] = float(update.message.text)  # Convert the input to float
@@ -66,7 +64,7 @@ async def ask_param3_extended(update: Update, context):
 
 async def ask_param4_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param4'] = float(update.message.text)  # Convert the input to float

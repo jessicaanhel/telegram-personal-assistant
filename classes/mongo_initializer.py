@@ -19,19 +19,19 @@ class MongoInitializer:
                 self.client.admin.command('ping')  # Force connection test
                 self.db = self.client[self.db_name]
                 self.connected = True
-                logging.info("✅ MongoDB connected successfully.")
+                logging.info("✔ MongoDB connected successfully.")
                 self._init_collections()
             except ConnectionFailure as e:
-                logging.error("❌ MongoDB connection failed: %s", e)
+                logging.error("✘ MongoDB connection failed: %s", e)
                 raise
 
     def _init_collections(self):
         if "price_alerts" not in self.db.list_collection_names():
             self.db.create_collection("price_alerts")
             self.db["price_alerts"].create_index("user_id")
-            logging.info("🛠️ Collection 'price_alerts' created with index.")
+            logging.info("Collection 'price_alerts' created with index.")
         else:
-            logging.info("ℹ️ Collection 'price_alerts' already exists.")
+            logging.info("Collection 'price_alerts' already exists.")
 
     def get_db(self):
         if not self.connected:
