@@ -3,22 +3,26 @@ from telegram import Update
 from telegram.ext import CallbackQueryHandler, ConversationHandler, MessageHandler, filters
 from telegram.warnings import PTBUserWarning
 
-from functions.calculation_script.calculation_script import my_function_extended
+from _features.functions.calculation_script.calculation_script import my_function_extended
 from handlers.inline_handler import inline_button_handler
-from handlers.start_handler import start_command
 from utils.constants import (
     ASK_PARAM1_EXTENDED,
     ASK_PARAM2_EXTENDED,
     ASK_PARAM3_EXTENDED,
     ASK_PARAM4_EXTENDED,
 )
-from utils.functions import reset_and_start
 
 filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
 
+app = None
+
+def init_app_extended_handler(app_instance):
+    global app
+    app = app_instance
+
 async def ask_param1_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param1'] = float(update.message.text)  # Convert the input to float
@@ -32,7 +36,7 @@ async def ask_param1_extended(update: Update, context):
 
 async def ask_param2_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param2'] = float(update.message.text)  # Convert the input to float
@@ -46,7 +50,7 @@ async def ask_param2_extended(update: Update, context):
 
 async def ask_param3_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param3'] = float(update.message.text)  # Convert the input to float
@@ -60,7 +64,7 @@ async def ask_param3_extended(update: Update, context):
 
 async def ask_param4_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param4'] = float(update.message.text)  # Convert the input to float
