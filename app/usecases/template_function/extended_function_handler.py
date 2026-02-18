@@ -16,15 +16,15 @@ filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBU
 app = None
 
 
+def init_app_extended_handler(app_instance):
+    global app
+    app = app_instance
+
+
 async def handle_extended_inline(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.message.reply_text("Please enter the first parameter for the extended function:")
     return ASK_PARAM1_EXTENDED
-
-
-def init_app_extended_handler(app_instance):
-    global app
-    app = app_instance
 
 
 async def ask_param1_extended(update: Update, context):

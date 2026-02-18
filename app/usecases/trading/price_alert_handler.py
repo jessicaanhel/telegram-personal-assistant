@@ -10,30 +10,7 @@ CHOOSING_COIN_NAME, CHOOSING_TARGET_PRICE = range(2)
 AWAITING_DOOR_SELECTION = 3
 alert_manager = PriceAlertManager()
 
-USER_ALERTS = {}
-
 app = None
-
-async def handle_price_alert_inline(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    data = query.data
-    user_id = query.from_user.id
-
-    if data == "setup_alert":
-        await query.message.reply_text(
-            "Please enter the parameters for your new price alert (e.g., BTC > 30k):"
-        )
-        return ASK_PARAM1_EXTENDED
-
-    elif data == "get_alerts_for_user":
-        # For now: just get fresh alerts immediately (simulate fresh data)
-        alerts = USER_ALERTS.get(user_id, [])
-        if not alerts:
-            await query.message.reply_text("You have no active alerts.")
-        else:
-            await query.message.reply_text(f"Your current alerts: {', '.join(alerts)}")
-        return None
-    return None
 
 
 def init_app_price_alert_handler(app_instance):

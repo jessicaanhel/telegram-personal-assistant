@@ -18,9 +18,8 @@ class App:
         self.register_global_handlers()
 
     def register_global_handlers(self):
-        """Register global routers like start, inline callbacks, error handler"""
+        """Register global routers like start, error handler"""
         self.bot.add_handler(CommandHandler("start", self.start_command))
-        self.bot.add_handler(CallbackQueryHandler(inline_router))
         self.bot.add_error_handler(self.error_handler)
 
     async def start_command(self, update, context):
@@ -48,6 +47,9 @@ class App:
         self.bot.add_handler(conv_handler_extended)
         self.bot.add_handler(conv_handler_empty_1)
         self.bot.add_handler(conv_handler_setup_alerts)
+
+        #Register router manager for inline button
+        self.bot.add_handler(CallbackQueryHandler(inline_router))
 
     def run(self):
         self.register_routers()

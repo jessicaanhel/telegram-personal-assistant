@@ -1,4 +1,3 @@
-from app.usecases.trading.price_alert_handler import handle_price_alert_inline
 from app.usecases.template_function.extended_function_handler import handle_extended_inline
 from app.usecases.template_function.empty_function_handler import handle_empty_inline
 
@@ -11,15 +10,16 @@ async def inline_router(update, context):
     data = query.data
     await query.answer()
 
-    if data in ("setup_alert", "get_alerts_for_user"):
-        return await handle_price_alert_inline(update, context)
+    # non-conversational functions only
+    if data == "get_alerts_for_user":
+        from app.usecases.trading.price_alert_handler import show_user_alerts
+        return await show_user_alerts(update, context)
 
-    elif data == "run_extended_function":
-        return await handle_extended_inline(update, context)
+    elif data == "return_home":
+        from app.usecases.trading.price_alert_handler import return_home
+        return await return_home(update, context)
 
-    # Template function button
-    elif data in ("empty_function_1", "empty_function_2"):
-        return await handle_empty_inline(update, context)
+    elif data == "reset_and_start":
+        return await context.bot_data["app"].reset_and_start(update, context)
 
-    await query.message.reply_text("Unknown action!")
     return None
