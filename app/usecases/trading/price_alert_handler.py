@@ -2,17 +2,44 @@ import logging
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ContextTypes, ConversationHandler, CallbackQueryHandler, MessageHandler, filters, CommandHandler
-from services.price_alert_service import PriceAlertManager
+
+from app.config import ASK_PARAM1_EXTENDED
+from app.usecases.trading.price_alert_service import PriceAlertManager
 
 CHOOSING_COIN_NAME, CHOOSING_TARGET_PRICE = range(2)
 AWAITING_DOOR_SELECTION = 3
 alert_manager = PriceAlertManager()
 
+USER_ALERTS = {}
+
 app = None
+
+async def handle_price_alert_inline(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    data = query.data
+    user_id = query.from_user.id
+
+    if data == "setup_alert":
+        await query.message.reply_text(
+            "Please enter the parameters for your new price alert (e.g., BTC > 30k):"
+        )
+        return ASK_PARAM1_EXTENDED
+
+    elif data == "get_alerts_for_user":
+        # For now: just get fresh alerts immediately (simulate fresh data)
+        alerts = USER_ALERTS.get(user_id, [])
+        if not alerts:
+            await query.message.reply_text("You have no active alerts.")
+        else:
+            await query.message.reply_text(f"Your current alerts: {', '.join(alerts)}")
+        return None
+    return None
+
 
 def init_app_price_alert_handler(app_instance):
     global app
     app = app_instance
+
 
 async def start_price_alert_function(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -25,6 +52,7 @@ async def choose_coin_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["coin_name"] = update.message.text.strip()
     await update.message.reply_text("Enter the target price in $ (e.g., 40000):")
     return CHOOSING_TARGET_PRICE
+
 
 async def choose_target_price(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -57,6 +85,7 @@ async def return_home(update, context):
     await query.edit_message_text("Choose a coin you want to track")
     return CHOOSING_COIN_NAME
 
+
 async def show_user_alerts(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     if query:
@@ -77,9 +106,11 @@ async def show_user_alerts(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Unexpected error: no query or message.")
 
+
 async def cancel_alert(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("✘ Alert creation canceled.")
     return ConversationHandler.END
+
 
 conv_handler_setup_alerts = ConversationHandler(
     entry_points=[CallbackQueryHandler(start_price_alert_function, pattern="^setup_alert$")],

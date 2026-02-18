@@ -1,18 +1,34 @@
 from warnings import filterwarnings
 from telegram import Update
-from telegram.ext import ConversationHandler, CallbackQueryHandler, MessageHandler, filters
+from telegram.ext import ConversationHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 from telegram.warnings import PTBUserWarning
 
 from _features.functions.empty_function_1.bot import empty_function_1
-from handlers.inline_handler import inline_button_handler
-from utils.constants import EMPTY_FUNCTION_1, EMPTY_FUNCTION_2
+from app.config import EMPTY_FUNCTION_1, EMPTY_FUNCTION_2
 filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
 
 app = None
 
+
+async def handle_empty_inline(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    data = query.data
+
+    if data == "empty_function_1":
+        await query.message.reply_text("Empty Function 1 triggered. Implement later.")
+        return EMPTY_FUNCTION_1
+
+    elif data == "empty_function_2":
+        await query.message.reply_text("Empty Function 2 triggered. Implement later.")
+        return EMPTY_FUNCTION_2
+
+    return None
+
+
 def init_app_empty_handler(app_instance):
     global app
     app = app_instance
+
 
 async def ask_param1_empty_function(update: Update, context):
     if update.message.text.lower() == "/start":
@@ -27,9 +43,10 @@ async def ask_param1_empty_function(update: Update, context):
     await update.message.reply_text("Please enter the second parameter (param2) for Empty Function 1:")
     return EMPTY_FUNCTION_2
 
+
 async def ask_param2_empty_function(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await reset_and_start(update, context)
+        return await app.reset_and_start(update, context)
 
     try:
         context.user_data['param2'] = float(update.message.text)  # Convert the input to float
@@ -46,11 +63,15 @@ async def ask_param2_empty_function(update: Update, context):
     return ConversationHandler.END
 
 
-conv_handler_empty_1 = ConversationHandler(
-    entry_points=[CallbackQueryHandler(inline_button_handler, pattern="^empty_function_1$")],
-    states={
-        EMPTY_FUNCTION_1: [MessageHandler(filters.TEXT, ask_param1_empty_function)],
-        EMPTY_FUNCTION_2: [MessageHandler(filters.TEXT, ask_param2_empty_function)],
-    },
-    fallbacks=[],
-)
+def get_empty_1_conv_handler(entry_callback):
+    """
+    Create and return the ConversationHandler for the empty function feature.
+    """
+    return ConversationHandler(
+        entry_points=[CallbackQueryHandler(entry_callback, pattern="^empty_function_1$")],
+        states={
+            EMPTY_FUNCTION_1: [MessageHandler(filters.TEXT, ask_param1_empty_function)],
+            EMPTY_FUNCTION_2: [MessageHandler(filters.TEXT, ask_param2_empty_function)],
+        },
+        fallbacks=[],
+    )

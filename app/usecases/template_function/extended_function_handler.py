@@ -1,11 +1,10 @@
 from warnings import filterwarnings
 from telegram import Update
-from telegram.ext import CallbackQueryHandler, ConversationHandler, MessageHandler, filters
+from telegram.ext import CallbackQueryHandler, ConversationHandler, MessageHandler, filters, ContextTypes
 from telegram.warnings import PTBUserWarning
 
 from _features.functions.calculation_script.calculation_script import my_function_extended
-from handlers.inline_handler import inline_button_handler
-from utils.constants import (
+from app.config import (
     ASK_PARAM1_EXTENDED,
     ASK_PARAM2_EXTENDED,
     ASK_PARAM3_EXTENDED,
@@ -16,9 +15,17 @@ filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBU
 
 app = None
 
+
+async def handle_extended_inline(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.message.reply_text("Please enter the first parameter for the extended function:")
+    return ASK_PARAM1_EXTENDED
+
+
 def init_app_extended_handler(app_instance):
     global app
     app = app_instance
+
 
 async def ask_param1_extended(update: Update, context):
     if update.message.text.lower() == "/start":
@@ -83,13 +90,18 @@ async def ask_param4_extended(update: Update, context):
     return ConversationHandler.END
 
 
-conv_handler_extended = ConversationHandler(
-    entry_points=[CallbackQueryHandler(inline_button_handler, pattern="^run_extended_function$")],
-    states={
-        ASK_PARAM1_EXTENDED: [MessageHandler(filters.TEXT, ask_param1_extended)],
-        ASK_PARAM2_EXTENDED: [MessageHandler(filters.TEXT, ask_param2_extended)],
-        ASK_PARAM3_EXTENDED: [MessageHandler(filters.TEXT, ask_param3_extended)],
-        ASK_PARAM4_EXTENDED: [MessageHandler(filters.TEXT, ask_param4_extended)],
-    },
-    fallbacks=[],
-)
+def get_extended_conv_handler(entry_callback):
+    """
+    Factory function to create the ConversationHandler.
+    entry_callback: the callback function to use as entry (e.g., inline_router)
+    """
+    return ConversationHandler(
+        entry_points=[CallbackQueryHandler(entry_callback, pattern="^run_extended_function$")],
+        states={
+            ASK_PARAM1_EXTENDED: [MessageHandler(filters.TEXT, ask_param1_extended)],
+            ASK_PARAM2_EXTENDED: [MessageHandler(filters.TEXT, ask_param2_extended)],
+            ASK_PARAM3_EXTENDED: [MessageHandler(filters.TEXT, ask_param3_extended)],
+            ASK_PARAM4_EXTENDED: [MessageHandler(filters.TEXT, ask_param4_extended)],
+        },
+        fallbacks=[],
+    )

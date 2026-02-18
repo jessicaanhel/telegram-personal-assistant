@@ -1,8 +1,8 @@
 from telegram.ext import Application
-from app.utils.constants import TELEGRAM_BOT_TOKEN
+from app.config import TELEGRAM_TOKEN
 
 class CoinAngelBot:
-    def __init__(self, token=TELEGRAM_BOT_TOKEN):
+    def __init__(self, token=TELEGRAM_TOKEN):
         self.application = Application.builder().token(token).build()
 
     def add_handler(self, handler):
