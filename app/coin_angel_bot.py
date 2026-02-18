@@ -1,5 +1,5 @@
 from telegram.ext import Application
-from utils.constants import TELEGRAM_BOT_TOKEN
+from app.utils.constants import TELEGRAM_BOT_TOKEN
 
 class CoinAngelBot:
     def __init__(self, token=TELEGRAM_BOT_TOKEN):
