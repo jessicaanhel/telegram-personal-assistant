@@ -1,6 +1,6 @@
 import os
 
-from app.utils.settings_utils import get_env
+from bot.utils.settings_utils import get_env
 
 ENV = os.getenv("ENV", "local")
 
