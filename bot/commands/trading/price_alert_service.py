@@ -4,8 +4,8 @@ import logging
 
 import requests
 from bson import ObjectId
-from app.config import MONGO_URI, DB_NAME, TELEGRAM_USER_ID
-from app.db.mongo_service import MongoInitializer
+from bot.config import MONGO_URI, DB_NAME, TELEGRAM_USER_ID
+from bot.db.mongo_service import MongoInitializer
 
 
 class PriceAlertManager:

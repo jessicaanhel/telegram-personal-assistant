@@ -4,7 +4,7 @@ from telegram.ext import CallbackQueryHandler, ConversationHandler, MessageHandl
 from telegram.warnings import PTBUserWarning
 
 from _features.functions.calculation_script.calculation_script import my_function_extended
-from app.config import (
+from bot.config import (
     ASK_PARAM1_EXTENDED,
     ASK_PARAM2_EXTENDED,
     ASK_PARAM3_EXTENDED,
@@ -12,13 +12,6 @@ from app.config import (
 )
 
 filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
-
-app = None
-
-
-def init_app_extended_handler(app_instance):
-    global app
-    app = app_instance
 
 
 async def handle_extended_inline(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -29,7 +22,7 @@ async def handle_extended_inline(update: Update, context: ContextTypes.DEFAULT_T
 
 async def ask_param1_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await app.reset_and_start(update, context)
+        return await context.bot_data["app"].reset_and_start(update, context)
 
     try:
         context.user_data['param1'] = float(update.message.text)  # Convert the input to float
@@ -43,7 +36,7 @@ async def ask_param1_extended(update: Update, context):
 
 async def ask_param2_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await app.reset_and_start(update, context)
+        return await context.bot_data["app"].reset_and_start(update, context)
 
     try:
         context.user_data['param2'] = float(update.message.text)  # Convert the input to float
@@ -57,7 +50,7 @@ async def ask_param2_extended(update: Update, context):
 
 async def ask_param3_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await app.reset_and_start(update, context)
+        return await context.bot_data["app"].reset_and_start(update, context)
 
     try:
         context.user_data['param3'] = float(update.message.text)  # Convert the input to float
@@ -71,7 +64,7 @@ async def ask_param3_extended(update: Update, context):
 
 async def ask_param4_extended(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await app.reset_and_start(update, context)
+        return await context.bot_data["app"].reset_and_start(update, context)
 
     try:
         context.user_data['param4'] = float(update.message.text)  # Convert the input to float
@@ -90,13 +83,9 @@ async def ask_param4_extended(update: Update, context):
     return ConversationHandler.END
 
 
-def get_extended_conv_handler(entry_callback):
-    """
-    Factory function to create the ConversationHandler.
-    entry_callback: the callback function to use as entry (e.g., inline_router)
-    """
+def get_extended_conv_handler(starter_command):
     return ConversationHandler(
-        entry_points=[CallbackQueryHandler(entry_callback, pattern="^run_extended_function$")],
+        entry_points=[CallbackQueryHandler(starter_command, pattern="^run_extended_function$")],
         states={
             ASK_PARAM1_EXTENDED: [MessageHandler(filters.TEXT, ask_param1_extended)],
             ASK_PARAM2_EXTENDED: [MessageHandler(filters.TEXT, ask_param2_extended)],

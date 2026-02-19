@@ -4,11 +4,10 @@ from telegram.ext import ConversationHandler, CallbackQueryHandler, MessageHandl
 from telegram.warnings import PTBUserWarning
 
 from _features.functions.empty_function_1.bot import empty_function_1
-from app.config import EMPTY_FUNCTION_1, EMPTY_FUNCTION_2
+from bot.config import EMPTY_FUNCTION_1, EMPTY_FUNCTION_2
 filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
 
-app = None
-
+#context.bot_data["app"] - this is instance of app manager-bot.
 
 async def handle_empty_inline(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -25,14 +24,9 @@ async def handle_empty_inline(update: Update, context: ContextTypes.DEFAULT_TYPE
     return None
 
 
-def init_app_empty_handler(app_instance):
-    global app
-    app = app_instance
-
-
 async def ask_param1_empty_function(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await app.reset_and_start(update, context)
+        return await context.bot_data["app"].reset_and_start(update, context)
 
     try:
         context.user_data['param1'] = float(update.message.text)  # Convert the input to float
@@ -46,7 +40,7 @@ async def ask_param1_empty_function(update: Update, context):
 
 async def ask_param2_empty_function(update: Update, context):
     if update.message.text.lower() == "/start":
-        return await app.reset_and_start(update, context)
+        return await context.bot_data["app"].reset_and_start(update, context)
 
     try:
         context.user_data['param2'] = float(update.message.text)  # Convert the input to float
@@ -63,12 +57,9 @@ async def ask_param2_empty_function(update: Update, context):
     return ConversationHandler.END
 
 
-def get_empty_1_conv_handler(entry_callback):
-    """
-    Create and return the ConversationHandler for the empty function feature.
-    """
+def get_empty_1_conv_handler(starter_command):
     return ConversationHandler(
-        entry_points=[CallbackQueryHandler(entry_callback, pattern="^empty_function_1$")],
+        entry_points=[CallbackQueryHandler(starter_command, pattern="^empty_function_2$")],
         states={
             EMPTY_FUNCTION_1: [MessageHandler(filters.TEXT, ask_param1_empty_function)],
             EMPTY_FUNCTION_2: [MessageHandler(filters.TEXT, ask_param2_empty_function)],

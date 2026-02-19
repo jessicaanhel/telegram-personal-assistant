@@ -3,19 +3,11 @@ import logging
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ContextTypes, ConversationHandler, CallbackQueryHandler, MessageHandler, filters, CommandHandler
 
-from app.config import ASK_PARAM1_EXTENDED
-from app.usecases.trading.price_alert_service import PriceAlertManager
+from bot.commands.trading.price_alert_service import PriceAlertManager
 
 CHOOSING_COIN_NAME, CHOOSING_TARGET_PRICE = range(2)
 AWAITING_DOOR_SELECTION = 3
 alert_manager = PriceAlertManager()
-
-app = None
-
-
-def init_app_price_alert_handler(app_instance):
-    global app
-    app = app_instance
 
 
 async def start_price_alert_function(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -53,7 +45,6 @@ async def choose_target_price(update: Update, context: ContextTypes.DEFAULT_TYPE
         f"✔ Alert set for {coin_name} at ${target_price}",
         reply_markup=reply_markup
     )
-
     return AWAITING_DOOR_SELECTION
 
 async def return_home(update, context):
